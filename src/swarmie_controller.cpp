@@ -96,18 +96,17 @@ void move2goal(float x,float y)
         if((fabs(angle_to_goal)) > 0.15)
         {
             vel_msg.angular.z = 1 * angle_to_goal;
-            vel_msg.angular.z = constrain(vel_msg.angular.z,-0.3,0.3);
             vel_msg.linear.x = 0;
         }
         // Move
         else
         {
             vel_msg.linear.x = 0.6 * dist_to_goal;
-            vel_msg.linear.x = constrain(vel_msg.linear.x,-0.25,0.25);
             vel_msg.angular.z = 0.6 * angle_to_goal;
-            vel_msg.angular.z = constrain(vel_msg.angular.z,-0.3,0.3);
-        }
 
+        }
+        vel_msg.linear.x = constrain(vel_msg.linear.x,-0.25,0.25);
+        vel_msg.angular.z = constrain(vel_msg.angular.z,-0.3,0.3);
         vel_msg.linear.y = 0;
         vel_msg.linear.z = 0;
         vel_msg.angular.x = 0;
@@ -141,16 +140,21 @@ int main(int argc, char** argv)
     // Register node with master
     ros::init(argc, argv, "swarmie_controller");
     // Initialize
-    std::string pub_topic = "/chappie/driveControl";
-    std::string sub_topic_odom = "/chappie/odom";
-    std::string sub_topic_imu = "/chappie/imu";
-    initialize(0.08, pub_topic, sub_topic_odom, sub_topic_imu);
+    initialize(0.08, "/chappie/driveControl", "/chappie/odom", "/chappie/imu");
 
-    // Testing
-    move2goal(1,0);
-    move2goal(1,1);
-    move2goal(0,1);
-    move2goal(0,0);
+    if(argc == 3)
+    {
+        // Go to position
+        move2goal(std::stoi(argv[1]),std::stoi(argv[2]));
+    }
+    else
+    {
+        // Testing: Make a square
+        move2goal(1,0);
+        move2goal(1,1);
+        move2goal(0,1);
+        move2goal(0,0);
+    }
 
     return 0;
 }
